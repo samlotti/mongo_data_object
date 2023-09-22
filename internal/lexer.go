@@ -21,6 +21,8 @@ const (
 
 	CLASS = "class"
 
+	CBLOCK = "~"
+
 	ENTITY = "entity"
 
 	AS         = "as"
@@ -146,6 +148,9 @@ func (l *Lexer) NextToken() (tk *Token) {
 	}
 
 	switch l.ch {
+	case '~':
+		tok = l.newTokenStr(CBLOCK, l.readCodeBlock())
+		break
 	case '=':
 		tok = l.newToken(EQUAL, '=')
 		l.readChar()
@@ -268,4 +273,22 @@ func (l *Lexer) convertToKeyword(tok Token) Token {
 		break
 	}
 	return tok
+}
+
+// readCodeBlock
+//
+//	~text[]anything~
+func (l *Lexer) readCodeBlock() string {
+	l.readChar()
+	pos := l.position
+	for l.ch != '~' {
+		l.readChar()
+		if l.isEOF() {
+			panic("unexpected EOF, unterminated ~ block")
+		}
+	}
+
+	str := string(l.runes[pos:l.position])
+	l.readChar()
+	return str
 }

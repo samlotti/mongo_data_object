@@ -10,7 +10,7 @@ func TestLexer1(t *testing.T) {
 package com.hapticapps.amici.shared.data_models.org;
 
 import com.hapticapps.amici.shared.utils.Utils;
-import org.bson.codecs.pojo.annotations.BsonProperty;
+import ~org.bson.codecs.pojo.annotations.BsonProperty~;
 
 class OrgPerson {
 
@@ -49,7 +49,7 @@ class OrgPerson {
 	tkn = lex.NextToken()
 	assert.Equal(t, IMPORT, string(tkn.Type))
 	tkn = lex.NextToken()
-	assert.Equal(t, IDENTIFIER, string(tkn.Type))
+	assert.Equal(t, CBLOCK, string(tkn.Type))
 	tkn = lex.NextToken()
 	assert.Equal(t, SEMI, string(tkn.Type))
 

@@ -90,7 +90,7 @@ func (p *Parser) parse_class() *AstClass {
 // ex:  String uuid as u = Utils.newUID();
 func (p *Parser) parse_data() *AstData {
 	d := &AstData{}
-	d.dtype = p.expectNext(IDENTIFIER).Literal
+	d.dtype = p.expectNext(IDENTIFIER, CBLOCK).Literal
 	d.dname = p.expectNext(IDENTIFIER).Literal
 	tk := p.expectNext(AS, SEMI, EQUAL)
 	if tk.Type == AS {
@@ -98,7 +98,7 @@ func (p *Parser) parse_data() *AstData {
 		tk = p.expectNext(SEMI, EQUAL)
 	}
 	if tk.Type == EQUAL {
-		// d.dflt = p.expectNext()
+		d.dflt = p.expectNext(IDENTIFIER, CBLOCK).Literal
 		tk = p.expectNext(SEMI)
 	}
 	return d

@@ -14,7 +14,7 @@ import org.bson.codecs.pojo.annotations.BsonProperty;
 
 entity OrgPerson {
 
-    data String uuid as u;
+    data ~String~ uuid as u = ~new Id()~;
 
     data String orgId as o;
 
