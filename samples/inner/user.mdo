@@ -1,0 +1,16 @@
+package com.hapticapps.amici.shared.data_models.org;
+
+import com.hapticapps.amici.shared.utils.Utils;
+
+/**
+    The org person
+**/
+entity User {
+
+    data String uuid as u = ~Utils.newUID()~;
+
+    data String name as n;
+
+    data String email as e;
+
+}

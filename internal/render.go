@@ -46,7 +46,7 @@ func (r *Render) nl() *Render {
 func (r *Render) renderEntity(entity *AstEntity) {
 	r.write("public class ").write(entity.name).s().begin().nl()
 	for _, dta := range entity.data {
-		r.tab().write("public static final ").write(dta.dtype).
+		r.tab().write("public static final String").
 			space().write("BSON_").write(strings.ToUpper(dta.dname)).
 			space().write("=").space().qstr(dta.getAsName()).semi().nl()
 	}
