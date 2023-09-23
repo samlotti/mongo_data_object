@@ -140,6 +140,7 @@ func (l *Lexer) NextToken() (tk *Token) {
 		} else {
 			break
 		}
+
 	}
 
 	if l.isEOF() {
@@ -208,6 +209,7 @@ func (l *Lexer) bypassMultilineComment() {
 	for !l.isEOF() {
 		if l.ch == '*' {
 			if l.peekChar() == '/' {
+				l.readChar()
 				l.readChar()
 				return
 			}

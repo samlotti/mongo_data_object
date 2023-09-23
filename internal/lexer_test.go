@@ -12,6 +12,10 @@ package com.hapticapps.amici.shared.data_models.org;
 import com.hapticapps.amici.shared.utils.Utils;
 import ~org.bson.codecs.pojo.annotations.BsonProperty~;
 
+/**
+A Comment
+**/
+
 class OrgPerson {
 
     data String uuid as u = Utils.newUID();
