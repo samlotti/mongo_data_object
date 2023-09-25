@@ -27,6 +27,14 @@ func (r *Render) Render() string {
 		r.write("import ").write(imprt).semi().nl()
 	}
 	r.write("import org.bson.codecs.pojo.annotations.BsonProperty;\n")
+	r.write("import java.util.Map;\n")
+
+	r.write("import java.util.List;\n")
+	r.write("import java.util.ArrayList;\n")
+
+	r.write("import com.mongodb.client.model.IndexOptions;\n")
+	r.write("import org.bson.conversions.Bson;\n")
+	r.write("import com.mongodb.BasicDBObject;\n")
 	r.nl()
 
 	r.renderEntity(r.ast.entity)
@@ -56,6 +64,8 @@ func (r *Render) renderEntity(entity *AstEntity) {
 	for _, enum := range r.ast.enums {
 		r.renderEnum(enum)
 	}
+
+	r.renderIndexDefs(entity.name, entity.indexes)
 
 	r.end().nl()
 
@@ -301,4 +311,51 @@ func (r *Render) tabe() *Render {
 		r.tab()
 	}
 	return r
+}
+
+func (r *Render) renderIndexDefs(name string, indexes []*AstIndex) {
+
+	r.tabs().w("public static class Indexes ").begin().nl()
+
+	r.tabs().w("public static List<Bson> ikeys = new ArrayList<>();").nl()
+	r.tabs().w("public static List<IndexOptions> ioptions = new ArrayList<>();").nl()
+	r.tabs().w("static ").begin().nl()
+	for _, idef := range indexes {
+		r.tabs().w("ikeys.add(new BasicDBObject( Map.of(").nl()
+		r.depth++
+		for idx, kk := range idef.keys {
+			if idx > 0 {
+				r.w(",").nl()
+			}
+			r.tabs().w(name).w(".").w("BSON_").write(strings.ToUpper(kk.dname)).w(", ")
+			if kk.ascDesc == 1 {
+				r.w("1")
+			} else {
+				r.w("-1")
+			}
+		}
+		r.nl()
+		r.depth--
+
+		r.tabs().w(")));").nl()
+
+		r.tabs().w("ioptions.add(new IndexOptions()")
+		if idef.unique == 1 {
+			r.w(".unique(true)")
+		}
+		if idef.sparse == 1 {
+			r.w(".sparse(true)")
+		}
+		if idef.background == 1 {
+			r.w(".background(true)")
+		}
+
+		r.w(");").nl()
+
+	}
+
+	r.tabe().end().nl()
+
+	r.tabe().end().nl()
+
 }

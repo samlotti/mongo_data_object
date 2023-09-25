@@ -17,6 +17,11 @@ import com.hapticapps.amici.shared.utils.Utils;
     The org person
 **/
 entity OrgPerson {
+    index (uuid asc) unique;
+    index (orgId asc) unique;
+    index (email asc) sparse;
+    index (state asc, name desc) sparse;
+
 
     data String uuid as u = ~Utils.newUID()~;
 

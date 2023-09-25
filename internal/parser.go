@@ -124,9 +124,14 @@ func (p *Parser) parse_entity() *AstEntity {
 	p.expectNext(LBRACE)
 
 	for {
-		tk := p.expectNext(RBRACE, DATA)
+		tk := p.expectNext(RBRACE, DATA, INDEX)
 		if tk.Type == RBRACE {
 			break
+		}
+
+		if tk.Type == INDEX {
+			p.parse_index(c)
+			continue
 		}
 
 		c.data = append(c.data, p.parse_data())
@@ -158,4 +163,66 @@ func (p *Parser) parse_enum() *AstEnum {
 		}
 	}
 	return r
+}
+
+func (p *Parser) parse_index(c *AstEntity) {
+	p.expectNext(LPAREN)
+
+	idx := &AstIndex{
+		keys:       nil,
+		unique:     0,
+		sparse:     0,
+		background: 0,
+	}
+	c.indexes = append(c.indexes, idx)
+
+	for {
+		tk := p.expectNext(IDENTIFIER)
+
+		k := &AstIndexKeys{
+			dname:   tk.Literal,
+			ascDesc: 1,
+		}
+		idx.keys = append(idx.keys, k)
+
+		peek := p.peekToken()
+		if peek.Type == ASC || peek.Type == DESC {
+			peek = p.expectNext(ASC, DESC)
+			if peek.Type == ASC {
+				k.ascDesc = 1
+			}
+			if peek.Type == DESC {
+				k.ascDesc = -1
+			}
+		}
+
+		nxt := p.expectNext(COMMA, RPAREN)
+		if nxt.Type == RPAREN {
+			break
+		}
+	}
+
+	for {
+		tk := p.expectNext(SPARSE, BACKGROUND, UNIQUE, SEMI)
+		if tk.Type == SEMI {
+			break
+		}
+
+		if tk.Type == UNIQUE {
+			idx.unique = 1
+		}
+
+		if tk.Type == BACKGROUND {
+			idx.background = 1
+		}
+
+		if tk.Type == SPARSE {
+			idx.sparse = 1
+		}
+	}
+
+}
+
+func (p *Parser) peekToken() *Token {
+	return p.lex.PeekToken()
 }

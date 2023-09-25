@@ -19,8 +19,9 @@ type AstFile struct {
 }
 
 type AstEntity struct {
-	name string
-	data []*AstData
+	name    string
+	data    []*AstData
+	indexes []*AstIndex
 }
 
 type AstClass struct {
@@ -31,6 +32,18 @@ type AstClass struct {
 type AstEnum struct {
 	name string
 	data []string
+}
+
+type AstIndex struct {
+	keys       []*AstIndexKeys
+	unique     int
+	sparse     int
+	background int
+}
+
+type AstIndexKeys struct {
+	dname   string
+	ascDesc int
 }
 
 type AstData struct {

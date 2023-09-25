@@ -21,6 +21,13 @@ const (
 
 	CLASS = "class"
 
+	INDEX      = "index"
+	UNIQUE     = "unique"
+	SPARSE     = "sparse"
+	BACKGROUND = "background"
+	ASC        = "asc"
+	DESC       = "desc"
+
 	CBLOCK = "~"
 
 	ENTITY = "entity"
@@ -33,6 +40,8 @@ const (
 	IMPORT     = "import"
 	PACKAGE    = "package"
 	LBRACE     = "{"
+	LPAREN     = "("
+	RPAREN     = ")"
 	SEMI       = ";"
 	RBRACE     = "}"
 	COMMA      = ","
@@ -48,7 +57,6 @@ type Lexer struct {
 	position     int  // the current character
 	readPosition int  // The next position
 	ch           rune // current character
-	priorToken   Token
 }
 
 func NewLexer(input string, fname string) *Lexer {
@@ -102,18 +110,12 @@ func (l *Lexer) peekChar() rune {
 
 func (l *Lexer) newToken(tokenType TokenType, ch rune) Token {
 	var r = Token{Type: tokenType, Literal: string(ch), Line: l.lineNum, Pos: l.lPos}
-	l.priorToken = r
 	return r
 }
 
 func (l *Lexer) newTokenStr(tokenType TokenType, ch string) Token {
 	var r = Token{Type: tokenType, Literal: ch, Line: l.lineNum, Pos: l.lPos}
-	l.priorToken = r
 	return r
-}
-
-func (l *Lexer) PriorToken() *Token {
-	return &l.priorToken
 }
 
 // NextToken
@@ -157,6 +159,14 @@ func (l *Lexer) NextToken() (tk *Token) {
 		break
 	case '=':
 		tok = l.newToken(EQUAL, '=')
+		l.readChar()
+		break
+	case '(':
+		tok = l.newToken(LPAREN, '(')
+		l.readChar()
+		break
+	case ')':
+		tok = l.newToken(RPAREN, ')')
 		l.readChar()
 		break
 	case '{':
@@ -262,6 +272,26 @@ func (l *Lexer) convertToKeyword(tok Token) Token {
 	case "entity":
 		tok.Type = ENTITY
 		break
+
+	case "index":
+		tok.Type = INDEX
+		break
+	case "unique":
+		tok.Type = UNIQUE
+		break
+	case "background":
+		tok.Type = BACKGROUND
+		break
+	case "sparse":
+		tok.Type = SPARSE
+		break
+	case "asc":
+		tok.Type = ASC
+		break
+	case "desc":
+		tok.Type = DESC
+		break
+
 	case "class":
 		tok.Type = CLASS
 		break
@@ -303,4 +333,19 @@ func (l *Lexer) readCodeBlock() string {
 	str := string(l.runes[pos:l.position])
 	l.readChar()
 	return str
+}
+
+func (l *Lexer) PeekToken() *Token {
+
+	cp := &Lexer{
+		input:        l.input,
+		runes:        l.runes,
+		FName:        l.FName,
+		lineNum:      l.lineNum,
+		lPos:         l.lPos,
+		position:     l.position,
+		readPosition: l.readPosition,
+		ch:           l.ch,
+	}
+	return cp.NextToken()
 }

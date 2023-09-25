@@ -13,6 +13,10 @@ import com.hapticapps.amici.shared.utils.Utils;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
 entity OrgPerson {
+    index (uuid asc) unique;
+    index (name asc) unique;
+    index (email asc) sparse;
+    index (state asc, name desc) sparse;
 
     data ~String~ uuid as u = ~new Id()~;
 
