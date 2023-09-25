@@ -26,7 +26,17 @@ class OrgPerson {
 
     data String email as e;
 
+	data OrgState state as s;
+
 }
+
+enum OrgState {
+        PENDING,
+        ACTIVE,
+        EXPIRED,
+        UNKNOWN
+}
+
 
 `
 

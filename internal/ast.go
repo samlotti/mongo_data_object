@@ -15,6 +15,7 @@ type AstFile struct {
 	imports []string
 	entity  *AstEntity
 	classes []*AstClass
+	enums   []*AstEnum
 }
 
 type AstEntity struct {
@@ -25,6 +26,11 @@ type AstEntity struct {
 type AstClass struct {
 	name string
 	data []*AstData
+}
+
+type AstEnum struct {
+	name string
+	data []string
 }
 
 type AstData struct {

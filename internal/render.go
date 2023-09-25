@@ -7,12 +7,14 @@ import (
 type Render struct {
 	ast     *AstFile
 	builder *strings.Builder
+	depth   int
 }
 
 func NewRender(ast *AstFile) *Render {
 	return &Render{
 		ast:     ast,
 		builder: nil,
+		depth:   0,
 	}
 }
 
@@ -44,39 +46,24 @@ func (r *Render) nl() *Render {
 }
 
 func (r *Render) renderEntity(entity *AstEntity) {
-	r.write("public class ").write(entity.name).s().begin().nl()
-	for _, dta := range entity.data {
-		r.tab().write("public static final String").
-			space().write("BSON_").write(strings.ToUpper(dta.dname)).
-			space().write("=").space().qstr(dta.getAsName()).semi().nl()
-	}
-	r.nl()
-	for _, dta := range entity.data {
-		if dta.hasNameAs() {
 
-			r.tab().write("@BsonProperty(").qstr(dta.getAsName()).write(")").nl()
-		}
-		r.tab().write("private ").write(dta.dtype).space().write(dta.dname)
-		//if dta.hasDefault() {
-		//	r.write(" = ").write(dta.dflt)
-		//}
-		r.semi().nl().nl()
+	r.renderCommonEntityClass(entity.name, entity.data, false)
+
+	for _, cls := range r.ast.classes {
+		r.renderClass(cls)
 	}
 
-	r.nl()
-	for _, dta := range entity.data {
-		r.writeGetter(dta)
+	for _, enum := range r.ast.enums {
+		r.renderEnum(enum)
 	}
-
-	r.nl()
-
-	r.writeBuilderCopyFunction(entity.name)
-	r.writeToString(entity.name, entity.data)
-
-	r.writeBuilderInnerClass(entity.name, entity.data)
 
 	r.end().nl()
 
+}
+
+func (r *Render) renderClass(cls *AstClass) {
+	r.renderCommonEntityClass(cls.name, cls.data, true)
+	r.tabe().end().nl()
 }
 
 func (r *Render) tab() *Render {
@@ -100,19 +87,34 @@ func (r *Render) semi() *Render {
 }
 
 func (r *Render) writeGetter(dta *AstData) {
-	r.tab().write("public ").write(dta.dtype).space()
+	r.tabs().write("public ").write(dta.dtype).space()
 
 	r.write(dta.getterName()).write("()").begin().nl()
 
-	r.tab2().write("return ").write(dta.dname).semi().nl()
+	r.tabs().write("return ").write(dta.dname).semi().nl()
 
-	r.tab().end().nl()
+	r.tabe().end().nl()
+}
+
+func (r *Render) writeSetter(dta *AstData) {
+	r.tabs().write("public void ")
+
+	r.write(dta.setterName()).write("(").w(dta.dtype).s().w("data)").begin().nl()
+
+	r.tabs().write("this.").write(dta.dname).w(" = data").semi().nl()
+
+	r.tabe().end().nl()
 }
 
 func (r *Render) writeBuilderCopyFunction(name string) {
-	r.tab().write("public ").write(r.builderName(name)).space().write("copy() ").begin().nl()
-	r.tab2().write("return ").write(r.builderName(name)).write(".from( this );").nl()
-	r.tab().end().nl()
+	r.tabs().write("public ").write(r.builderName(name)).space().write("copy() ").begin().nl()
+	r.tabs().write("return ").write(r.builderName(name)).write(".from( this );").nl()
+	r.tabe().end().nl().nl()
+
+	r.tabs().write("public static ").write(r.builderName(name)).space().write("builder() ").begin().nl()
+	r.tabs().write("return new ").write(r.builderName(name)).write("();").nl()
+	r.tabe().end().nl()
+
 }
 
 func (r *Render) builderName(name string) string {
@@ -120,10 +122,10 @@ func (r *Render) builderName(name string) string {
 }
 
 func (r *Render) writeToString(name string, data []*AstData) {
-	r.tab().write("public String toString() ").begin().nl()
-	r.tab2().write("return \"").write(name).write("{\" + ").nl()
-	r.tab3().writeQ("}").semi().nl()
-	r.tab().end().nl().nl()
+	r.tabs().write("public String toString() ").begin().nl()
+	r.tabs().write("return \"").write(name).write("{\" + ").nl()
+	r.tabs().writeQ("}").semi().nl()
+	r.tabe().end().nl().nl()
 
 }
 
@@ -132,9 +134,9 @@ func (r *Render) writeQ(s string) *Render {
 }
 
 func (r *Render) writeBuilderInnerClass(name string, data []*AstData) {
-	r.tab().w("public static class ").write(r.builderName(name)).s().begin().nl().nl()
+	r.tabs().w("public static class ").write(r.builderName(name)).s().begin().nl().nl()
 	for _, d := range data {
-		r.tab2().w("private ").w(d.dtype).s().w(d.dname)
+		r.tabs().w("private ").w(d.dtype).s().w(d.dname)
 		if d.hasDefault() {
 			r.w(" = ").w(d.dflt)
 		}
@@ -148,20 +150,8 @@ func (r *Render) writeBuilderInnerClass(name string, data []*AstData) {
 	r.nl()
 	r.writeBuildMethods(name, data)
 
-	r.tab().end().nl()
+	r.tabe().end().nl()
 
-}
-
-func (r *Render) tab2() *Render {
-	return r.tab().tab()
-}
-
-func (r *Render) tab3() *Render {
-	return r.tab2().tab()
-}
-
-func (r *Render) tab4() *Render {
-	return r.tab2().tab2()
 }
 
 func (r *Render) w(s string) *Render {
@@ -173,10 +163,12 @@ func (r *Render) s() *Render {
 }
 
 func (r *Render) end() *Render {
+	r.depth--
 	return r.w("}")
 }
 
 func (r *Render) begin() *Render {
+	r.depth++
 	return r.w("{")
 }
 
@@ -191,13 +183,13 @@ func (r *Render) begin() *Render {
 //	    return r;
 //	}
 func (r *Render) writeFromFunction(name string, data []*AstData) {
-	r.tab2().w("public static ").w(r.builderName(name)).s().w("from(").w(name).w(" source) ").begin().nl()
-	r.tab3().w("var r = new ").w(r.builderName(name)).w("();").nl()
+	r.tabs().w("public static ").w(r.builderName(name)).s().w("from(").w(name).w(" source) ").begin().nl()
+	r.tabs().w("var r = new ").w(r.builderName(name)).w("();").nl()
 	for _, d := range data {
-		r.tab3().w("r.").w(d.dname).w(" = source.").w(d.getterName()).w("()").semi().nl()
+		r.tabs().w("r.").w(d.dname).w(" = source.").w(d.getterName()).w("()").semi().nl()
 	}
-	r.tab3().w("return r;").nl()
-	r.tab2().end().nl()
+	r.tabs().w("return r;").nl()
+	r.tabe().end().nl()
 }
 
 // writeBuilderMethods
@@ -209,11 +201,11 @@ func (r *Render) writeFromFunction(name string, data []*AstData) {
 func (r *Render) writeBuilderMethods(name string, data []*AstData) {
 	for _, d := range data {
 		r.nl()
-		r.tab2().w("public ").w(r.builderName(name)).s().w(d.setterName()).
+		r.tabs().w("public ").w(r.builderName(name)).s().w(d.setterName()).
 			w("(").w(d.dtype).s().w(d.dname).w(") ").begin().nl()
-		r.tab3().w("this.").w(d.dname).w(" = ").w(d.dname).semi().nl()
-		r.tab3().w("return this;").nl()
-		r.tab2().end().nl()
+		r.tabs().w("this.").w(d.dname).w(" = ").w(d.dname).semi().nl()
+		r.tabs().w("return this;").nl()
+		r.tabe().end().nl()
 	}
 }
 
@@ -228,11 +220,85 @@ func (r *Render) writeBuilderMethods(name string, data []*AstData) {
 //	    return r;
 //	}
 func (r *Render) writeBuildMethods(name string, data []*AstData) {
-	r.tab2().w("public ").w(name).s().w("build() ").begin().nl()
-	r.tab3().w("var r = new ").w(name).w("()").semi().nl()
+	r.tabs().w("public ").w(name).s().w("build() ").begin().nl()
+	r.tabs().w("var r = new ").w(name).w("()").semi().nl()
 	for _, d := range data {
-		r.tab3().w("r.").w(d.dname).w(" = ").w(d.dname).semi().nl()
+		r.tabs().w("r.").w(d.dname).w(" = ").w(d.dname).semi().nl()
 	}
-	r.tab3().w("return r;").nl()
-	r.tab2().end().nl()
+	r.tabs().w("return r;").nl()
+	r.tabe().end().nl()
+}
+
+// renderEnum
+//
+// public enum OrgState {
+// PENDING,
+// ACTIVE,
+// EXPIRED,
+//
+// UNKNOWN
+// }
+func (r *Render) renderEnum(enum *AstEnum) {
+	r.nl()
+	r.tabs().w("public enum ").w(enum.name).s().begin().nl()
+	for idx, n := range enum.data {
+		if idx > 0 {
+			r.w(",").nl()
+		}
+		r.tabs().w(n)
+	}
+	r.nl()
+	r.tabe().end().nl()
+}
+
+func (r *Render) renderCommonEntityClass(name string, data []*AstData, inner bool) {
+
+	pc := "public class "
+	if inner {
+		pc = "public static class "
+	}
+
+	r.tabs().write(pc).write(name).s().begin().nl()
+	for _, dta := range data {
+		r.tabs().write("public static final String").
+			space().write("BSON_").write(strings.ToUpper(dta.dname)).
+			space().write("=").space().qstr(dta.getAsName()).semi().nl()
+	}
+	r.nl()
+	for _, dta := range data {
+		if dta.hasNameAs() {
+			r.tabs().write("@BsonProperty(").qstr(dta.getAsName()).write(")").nl()
+		}
+		r.tabs().write("private ").write(dta.dtype).space().write(dta.dname)
+		r.semi().nl().nl()
+	}
+
+	r.nl()
+	for _, dta := range data {
+		r.writeGetter(dta)
+		r.writeSetter(dta)
+	}
+
+	r.nl()
+
+	r.writeBuilderCopyFunction(name)
+	r.writeToString(name, data)
+
+	r.writeBuilderInnerClass(name, data)
+
+}
+
+func (r *Render) tabs() *Render {
+	for i := 0; i < r.depth; i++ {
+		r.tab()
+	}
+	return r
+}
+
+// tabe - tab for end the .end() is next.
+func (r *Render) tabe() *Render {
+	for i := 0; i < r.depth-1; i++ {
+		r.tab()
+	}
+	return r
 }

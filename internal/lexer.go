@@ -17,13 +17,15 @@ type Token struct {
 
 const (
 	ILLEGAL = "Illegal"
-	EOF     = "Eof"
+	EOF     = "eof"
 
 	CLASS = "class"
 
 	CBLOCK = "~"
 
 	ENTITY = "entity"
+
+	ENUM = "enum"
 
 	AS         = "as"
 	DATA       = "data"
@@ -33,6 +35,7 @@ const (
 	LBRACE     = "{"
 	SEMI       = ";"
 	RBRACE     = "}"
+	COMMA      = ","
 	IDENTIFIER = "ident"
 )
 
@@ -164,6 +167,10 @@ func (l *Lexer) NextToken() (tk *Token) {
 		tok = l.newToken(RBRACE, '}')
 		l.readChar()
 		break
+	case ',':
+		tok = l.newToken(COMMA, ',')
+		l.readChar()
+		break
 	case ';':
 		tok = l.newToken(SEMI, ';')
 		l.readChar()
@@ -257,6 +264,9 @@ func (l *Lexer) convertToKeyword(tok Token) Token {
 		break
 	case "class":
 		tok.Type = CLASS
+		break
+	case "enum":
+		tok.Type = ENUM
 		break
 	case "as":
 		tok.Type = AS

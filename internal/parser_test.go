@@ -24,6 +24,8 @@ entity OrgPerson {
 	
 	data Address address as a1;
 
+	data OrgState state as st;
+
 }
 
 
@@ -39,6 +41,14 @@ class Address {
 
 }
 
+enum OrgState {
+        PENDING,
+        ACTIVE,
+        EXPIRED,
+        UNKNOWN
+}
+
+
 `
 
 	// package com.hapticapps.amici.shared.data_models.org;
@@ -50,4 +60,7 @@ class Address {
 	assert.Equal(t, 1, len(ast.classes))
 	assert.Equal(t, "Address", ast.classes[0].name)
 	assert.Equal(t, "OrgPerson", ast.entity.name)
+	assert.Equal(t, "OrgState", ast.enums[0].name)
+	assert.Equal(t, 4, len(ast.enums[0].data))
+
 }

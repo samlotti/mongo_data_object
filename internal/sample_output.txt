@@ -47,6 +47,10 @@ public class OrgPerson  {
         return OrgPersonBuilder.from(this);
     }
 
+    public static OrganizationBuilder builder() {
+        return new OrganizationBuilder();
+    }
+
     @Override
     public String toString() {
         return "OrgPerson{" +

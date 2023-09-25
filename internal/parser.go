@@ -1,6 +1,9 @@
 package internal
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type Parser struct {
 	lex *Lexer
@@ -20,13 +23,17 @@ func (p *Parser) parse() *AstFile {
 	ast.pkg = p.parse_package()
 
 	for {
-		tk := p.expectNext(CLASS, ENTITY, IMPORT, EOF)
+		tk := p.expectNext(CLASS, ENTITY, IMPORT, EOF, ENUM)
 		if tk.Type == IMPORT {
 			ast.imports = append(ast.imports, p.parse_import())
 		}
 
 		if tk.Type == CLASS {
 			ast.classes = append(ast.classes, p.parse_class())
+		}
+
+		if tk.Type == ENUM {
+			ast.enums = append(ast.enums, p.parse_enum())
 		}
 
 		if tk.Type == ENTITY {
@@ -58,7 +65,14 @@ func (p *Parser) expectNext(ids ...TokenType) *Token {
 			return tk
 		}
 	}
-	panic(fmt.Sprintf("invalid token: %s", tk.Literal))
+
+	sb := &strings.Builder{}
+	for _, id := range ids {
+		sb.WriteString(string(id))
+		sb.WriteString(" ")
+	}
+
+	panic(fmt.Sprintf("invalid token: %s expected: %s at: %d:%d", tk.Literal, sb.String(), p.lex.lineNum, p.lex.lPos))
 	return nil
 }
 
@@ -119,4 +133,29 @@ func (p *Parser) parse_entity() *AstEntity {
 
 	}
 	return c
+}
+
+// parse_enum
+//
+//enum OrgState {
+//PENDING,
+//ACTIVE,
+//EXPIRED,
+//UNKNOWN
+//}
+
+func (p *Parser) parse_enum() *AstEnum {
+	r := &AstEnum{}
+	r.name = p.expectNext(IDENTIFIER).Literal
+	p.expectNext(LBRACE)
+	for {
+		n := p.expectNext(IDENTIFIER)
+		r.data = append(r.data, n.Literal)
+
+		n = p.expectNext(COMMA, RBRACE)
+		if n.Type == RBRACE {
+			break
+		}
+	}
+	return r
 }

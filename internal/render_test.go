@@ -26,7 +26,27 @@ entity OrgPerson {
 
     data String email as e;
 
+	data OrgState state as os;
+
 }
+
+enum OrgState {
+        PENDING,
+        ACTIVE,
+        EXPIRED,
+        UNKNOWN
+}
+
+/**
+Products owned by the organization with expiration date
+**/
+class Product {
+    data String productId as pid;
+    data long expData as ed;
+    data String license as lic;
+}
+
+
 
 
 
@@ -43,9 +63,11 @@ import com.hapticapps.amici.shared.utils.Utils;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
 `))
-	assert.True(t, strings.Contains(str, `public static final String BSON_UUID = "u";`))
-	assert.True(t, strings.Contains(str, `public OrgPersonBuilder setUuid(String uuid) {`))
 
 	fmt.Println(str)
+
+	assert.True(t, strings.Contains(str, `public static final String BSON_UUID = "u";`))
+	assert.True(t, strings.Contains(str, `public OrgPersonBuilder setUuid(String uuid) {`))
+	assert.True(t, strings.Contains(str, `public enum OrgState {`))
 
 }
