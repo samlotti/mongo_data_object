@@ -54,9 +54,14 @@ import org.bson.codecs.pojo.annotations.BsonProperty;
 /**
     The org person
 **/
-class OrgPerson {
+entity OrgPerson {
 
-    data String uuid as u = Utils.newUID();
+    index (uuid asc) unique;
+    index (name asc) unique;
+    index (email asc) unique sparse;
+    index (friendIds asc) sparse;
+
+    data String uuid as u = ~Utils.newUID()~;
 
     data String orgId as o;
 
@@ -64,18 +69,27 @@ class OrgPerson {
 
     data String email as e;
 
-}
+    data Status status as st = ~Status.PENDING~;
+
+    data ~List<String>~ friendIds as f = ~new ArrayList<>()~;
+
+    data ~List<Address>~ addresses as a = ~new ArrayList<>()~;
+    
+    ...
 
 ```
 
-The output is: [output java](internal/sample_output.java)
+The output is: [output java](samples/sample_input.java)
 
 ```
     Usage of the output class:
     
     var org = OrgPerson.builder().setOrgId("45").setName("test").build();
+    
+    // Update the org.  Note the original is not modified.
     var orgUpdate = org.copy().setName("newName").build();
 
+    
 ```
 
 # Examples
