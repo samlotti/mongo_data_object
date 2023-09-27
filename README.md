@@ -68,7 +68,7 @@ class OrgPerson {
 
 ```
 
-The output is: [output java](internal/sample_output.txt)
+The output is: [output java](internal/sample_output.java)
 
 ```
     Usage of the output class:
@@ -113,9 +113,6 @@ These are to be treated as POJO for the mongo services, so the codec registry sh
             .applyConnectionString(connectionString)
             .codecRegistry(codecRegistry)
             .build();
-
-
-
 ```
 
 The mdo grammar.
@@ -129,7 +126,7 @@ The mdo grammar.
     
     entity ClassName {
         
-           index ( fieldName asc/desc [, fieldName asc/desc ] ) unique sparse ;
+           index ( fieldName asc/desc [, fieldName asc/desc ] ) unique sparse background;
            .. index ..
            
            /**
@@ -159,6 +156,11 @@ The mdo grammar.
     [enums, classes]
 
 ```
+
+# Why setters?
+
+Mongo needs setters and getters for reading and writing the data.  At this time I have not found a way around this.  
+If you want immutable, just use the builder and copy methods to update the data.
 
 # Contributing
 

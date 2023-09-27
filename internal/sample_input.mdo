@@ -1,0 +1,45 @@
+package com.hapticapps.amici.shared.data_models.org;
+
+import com.hapticapps.amici.shared.utils.Utils;
+import org.bson.codecs.pojo.annotations.BsonProperty;
+
+/**
+    The org person
+**/
+entity OrgPerson {
+
+    index (uuid asc) unique;
+    index (name asc) unique;
+    index (email asc) unique sparse;
+    index (friendIds asc) sparse;
+
+    data String uuid as u = ~Utils.newUID()~;
+
+    data String orgId as o;
+
+    data String name as n;
+
+    data String email as e;
+
+    data Status status as st = ~Status.PENDING~;
+
+    data ~List<String>~ friendIds as f = ~new ArrayList<>()~;
+
+    data ~List<Address>~ addresses as a = ~new ArrayList<>()~;
+
+}
+
+enum Status {
+    PENDING, ACTIVE, UNREGISTERED
+}
+
+class Address {
+    data String city as ct;
+    data String state as st;
+    data String zip;
+    data AddressType addressType as at;
+}
+
+enum AddressType {
+    PRIMARY, SECONDARY
+}
