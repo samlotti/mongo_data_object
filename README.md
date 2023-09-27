@@ -21,7 +21,11 @@ Note that mdo is written in go, so go will need to be installed.
 
 Install the command line tool
 
-go install github.com/samlotti/mongo_data_object@latest
+    go install github.com/samlotti/mongo_data_object
+
+    or if cloning the repository
+
+    go install mdo.go
 
 ## Running
 In the root directory of your java project, or the root of where your mongo entities will reside.
@@ -74,6 +78,12 @@ The output is: [output java](internal/sample_output.txt)
 
 ```
 
+# Examples
+
+See the [samples](samples) folder.
+* [org.mdo](samples/acct.mdo)
+* [generated java class](samples/acct.java)
+
 # Mongo
 
 This project only contains support for data objects that can be persisted in mongo.
@@ -105,6 +115,48 @@ These are to be treated as POJO for the mongo services, so the codec registry sh
             .build();
 
 
+
+```
+
+The mdo grammar.
+```
+    package package.name;
+    
+    /**
+        Comments
+    **/
+    import ... ;
+    
+    entity ClassName {
+        
+           index ( fieldName asc/desc [, fieldName asc/desc ] ) unique sparse ;
+           .. index ..
+           
+           /**
+           Data represents a field.
+           Type is the java type (can be a class type)
+           ~string~ are identifiers but can have special characters.  For example an
+           array.  
+           
+           data type field [as bsonName] [= initialValue];
+           
+           */
+           data ~Type~ uuid as u = ~new Id()~;
+           data ~List<Product>~ products as p = ~new ArrayList<>()~;
+    
+    } 
+    
+    enum ClassName {
+        Val, Val ...
+    }
+    
+    class ClassName {
+        /**
+            data fields like the entity.
+        */
+    }
+    
+    [enums, classes]
 
 ```
 
