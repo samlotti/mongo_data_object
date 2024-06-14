@@ -212,7 +212,7 @@ func (r *Render) writeFromFunction(name string, data []*AstData) {
 func (r *Render) writeBuilderMethods(name string, data []*AstData) {
 	for _, d := range data {
 		r.nl()
-		r.tabs().w("public ").w(r.builderName(name)).s().w(d.setterName()).
+		r.tabs().w("public ").w(r.builderName(name)).s().w(d.withName()).
 			w("(").w(d.dtype).s().w(d.dname).w(") ").begin().nl()
 		r.tabs().w("this.").w(d.dname).w(" = ").w(d.dname).semi().nl()
 		r.tabs().w("return this;").nl()

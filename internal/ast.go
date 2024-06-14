@@ -85,3 +85,12 @@ func (d *AstData) setterName() string {
 	return "set" + s
 
 }
+
+func (d *AstData) withName() string {
+	rn := []rune(d.dname)
+	rn[0] = unicode.ToUpper(rn[0])
+	s := string(rn)
+
+	return "with" + s
+
+}
