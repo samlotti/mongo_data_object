@@ -22,11 +22,13 @@ type AstEntity struct {
 	name    string
 	data    []*AstData
 	indexes []*AstIndex
+	show    []string
 }
 
 type AstClass struct {
 	name string
 	data []*AstData
+	show []string
 }
 
 type AstEnum struct {

@@ -33,6 +33,8 @@ entity OrgPerson {
 
 	data OrgState state as os;
 
+	show (name, email, state);
+
 }
 
 enum OrgState {

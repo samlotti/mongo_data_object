@@ -56,7 +56,7 @@ func (r *Render) nl() *Render {
 
 func (r *Render) renderEntity(entity *AstEntity) {
 
-	r.renderCommonEntityClass(entity.name, entity.data, false)
+	r.renderCommonEntityClass(entity.name, entity.data, entity.show, false)
 
 	for _, cls := range r.ast.classes {
 		r.renderClass(cls)
@@ -73,7 +73,7 @@ func (r *Render) renderEntity(entity *AstEntity) {
 }
 
 func (r *Render) renderClass(cls *AstClass) {
-	r.renderCommonEntityClass(cls.name, cls.data, true)
+	r.renderCommonEntityClass(cls.name, cls.data, cls.show, true)
 	r.tabe().end().nl()
 }
 
@@ -132,10 +132,26 @@ func (r *Render) builderName(name string) string {
 	return name + "Builder"
 }
 
-func (r *Render) writeToString(name string, data []*AstData) {
+func (r *Render) writeToString(name string, data []*AstData, show []string) {
 	r.tabs().write("public String toString() ").begin().nl()
 	r.tabs().write("return \"").write(name).write("{\" + ").nl()
-	r.tabs().writeQ("}").semi().nl()
+
+	for idx, s := range show {
+		if idx > 0 {
+			r.tabs().tab().write(" + \", \" + ").nl()
+		}
+		for _, d := range data {
+			if d.dname == s {
+				r.tabs().tab().write("\"").write(s).write("=\" + ").write(d.dname).nl()
+			}
+		}
+	}
+	if len(show) > 0 {
+		r.tabs().write("+").writeQ("}").semi().nl()
+	} else {
+		r.tabs().writeQ("}").semi().nl()
+	}
+
 	r.tabe().end().nl().nl()
 
 }
@@ -262,7 +278,7 @@ func (r *Render) renderEnum(enum *AstEnum) {
 	r.tabe().end().nl()
 }
 
-func (r *Render) renderCommonEntityClass(name string, data []*AstData, inner bool) {
+func (r *Render) renderCommonEntityClass(name string, data []*AstData, show []string, inner bool) {
 
 	pc := "public class "
 	if inner {
@@ -297,7 +313,7 @@ func (r *Render) renderCommonEntityClass(name string, data []*AstData, inner boo
 	r.nl()
 
 	r.writeBuilderCopyFunction(name)
-	r.writeToString(name, data)
+	r.writeToString(name, data, show)
 
 	r.writeBuilderInnerClass(name, data)
 

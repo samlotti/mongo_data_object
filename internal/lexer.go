@@ -46,6 +46,7 @@ const (
 	RBRACE     = "}"
 	COMMA      = ","
 	IDENTIFIER = "ident"
+	SHOW       = "show"
 )
 
 type Lexer struct {
@@ -272,7 +273,9 @@ func (l *Lexer) convertToKeyword(tok Token) Token {
 	case "entity":
 		tok.Type = ENTITY
 		break
-
+	case "show":
+		tok.Type = SHOW
+		break
 	case "index":
 		tok.Type = INDEX
 		break

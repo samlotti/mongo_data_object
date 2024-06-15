@@ -30,6 +30,8 @@ entity OrgPerson {
 
 	data OrgState state as st;
 
+	show (name, email, state);
+
 }
 
 

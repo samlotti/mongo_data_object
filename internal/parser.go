@@ -69,10 +69,10 @@ func (p *Parser) expectNext(ids ...TokenType) *Token {
 	sb := &strings.Builder{}
 	for _, id := range ids {
 		sb.WriteString(string(id))
-		sb.WriteString(" ")
+		sb.WriteString(", ")
 	}
 
-	panic(fmt.Sprintf("invalid token: %s expected: %s at: %d:%d", tk.Literal, sb.String(), p.lex.lineNum, p.lex.lPos))
+	panic(fmt.Sprintf("invalid token: '%s' expected one of: [%s] at: %d:%d", tk.Literal, sb.String(), p.lex.lineNum, p.lex.lPos))
 	return nil
 }
 
@@ -124,13 +124,27 @@ func (p *Parser) parse_entity() *AstEntity {
 	p.expectNext(LBRACE)
 
 	for {
-		tk := p.expectNext(RBRACE, DATA, INDEX)
+		tk := p.expectNext(RBRACE, DATA, INDEX, SHOW)
 		if tk.Type == RBRACE {
 			break
 		}
 
 		if tk.Type == INDEX {
 			p.parse_index(c)
+			continue
+		}
+
+		if tk.Type == SHOW {
+			p.expectNext(LPAREN)
+			for {
+				tk := p.expectNext(IDENTIFIER)
+				c.show = append(c.show, tk.Literal)
+				tk = p.expectNext(COMMA, RPAREN)
+				if tk.Type == RPAREN {
+					break
+				}
+			}
+			p.expectNext(SEMI)
 			continue
 		}
 
