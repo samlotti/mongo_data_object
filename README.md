@@ -84,10 +84,10 @@ The output is: [output java](samples/sample_input.java)
 ```
     Usage of the output class:
     
-    var org = OrgPerson.builder().setOrgId("45").setName("test").build();
+    var org = OrgPerson.builder().withOrgId("45").withName("test").build();
     
     // Update the org.  Note the original is not modified.
-    var orgUpdate = org.copy().setName("newName").build();
+    var orgUpdate = org.copy().withName("newName").build();
 
     
 ```
@@ -182,4 +182,4 @@ All contributions are welcome – if you find a bug please report it.
 
 # Contributors
 
-* Sam Lotti (support@hapticappsllc.com)
+* Sam Lotti (slotti@hapticappsllc.com)

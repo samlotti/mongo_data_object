@@ -92,7 +92,16 @@ public class Org {
 	}
 	public String toString() {
 		return "Org{" + 
-		"}";
+			"name=" + name
+			 + ", " + 
+			"city=" + city
+			 + ", " + 
+			"state=" + state
+			 + ", " + 
+			"zip=" + zip
+			 + ", " + 
+			"email=" + email
+		+"}";
 	}
 
 	public static class OrgBuilder {
@@ -123,37 +132,37 @@ public class Org {
 			return r;
 		}
 
-		public OrgBuilder setUuid(String uuid) {
+		public OrgBuilder withUuid(String uuid) {
 			this.uuid = uuid;
 			return this;
 		}
 
-		public OrgBuilder setName(String name) {
+		public OrgBuilder withName(String name) {
 			this.name = name;
 			return this;
 		}
 
-		public OrgBuilder setCity(String city) {
+		public OrgBuilder withCity(String city) {
 			this.city = city;
 			return this;
 		}
 
-		public OrgBuilder setState(String state) {
+		public OrgBuilder withState(String state) {
 			this.state = state;
 			return this;
 		}
 
-		public OrgBuilder setZip(String zip) {
+		public OrgBuilder withZip(String zip) {
 			this.zip = zip;
 			return this;
 		}
 
-		public OrgBuilder setMembers(List<MemberId> members) {
+		public OrgBuilder withMembers(List<MemberId> members) {
 			this.members = members;
 			return this;
 		}
 
-		public OrgBuilder setEmail(String email) {
+		public OrgBuilder withEmail(String email) {
 			this.email = email;
 			return this;
 		}

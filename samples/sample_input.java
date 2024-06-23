@@ -94,7 +94,12 @@ public class OrgPerson {
 	}
 	public String toString() {
 		return "OrgPerson{" + 
-		"}";
+			"orgId=" + orgId
+			 + ", " + 
+			"name=" + name
+			 + ", " + 
+			"email=" + email
+		+"}";
 	}
 
 	public static class OrgPersonBuilder {
@@ -125,37 +130,37 @@ public class OrgPerson {
 			return r;
 		}
 
-		public OrgPersonBuilder setUuid(String uuid) {
+		public OrgPersonBuilder withUuid(String uuid) {
 			this.uuid = uuid;
 			return this;
 		}
 
-		public OrgPersonBuilder setOrgId(String orgId) {
+		public OrgPersonBuilder withOrgId(String orgId) {
 			this.orgId = orgId;
 			return this;
 		}
 
-		public OrgPersonBuilder setName(String name) {
+		public OrgPersonBuilder withName(String name) {
 			this.name = name;
 			return this;
 		}
 
-		public OrgPersonBuilder setEmail(String email) {
+		public OrgPersonBuilder withEmail(String email) {
 			this.email = email;
 			return this;
 		}
 
-		public OrgPersonBuilder setStatus(Status status) {
+		public OrgPersonBuilder withStatus(Status status) {
 			this.status = status;
 			return this;
 		}
 
-		public OrgPersonBuilder setFriendIds(List<String> friendIds) {
+		public OrgPersonBuilder withFriendIds(List<String> friendIds) {
 			this.friendIds = friendIds;
 			return this;
 		}
 
-		public OrgPersonBuilder setAddresses(List<Address> addresses) {
+		public OrgPersonBuilder withAddresses(List<Address> addresses) {
 			this.addresses = addresses;
 			return this;
 		}
@@ -246,22 +251,22 @@ public class OrgPerson {
 				return r;
 			}
 
-			public AddressBuilder setCity(String city) {
+			public AddressBuilder withCity(String city) {
 				this.city = city;
 				return this;
 			}
 
-			public AddressBuilder setState(String state) {
+			public AddressBuilder withState(String state) {
 				this.state = state;
 				return this;
 			}
 
-			public AddressBuilder setZip(String zip) {
+			public AddressBuilder withZip(String zip) {
 				this.zip = zip;
 				return this;
 			}
 
-			public AddressBuilder setAddressType(AddressType addressType) {
+			public AddressBuilder withAddressType(AddressType addressType) {
 				this.addressType = addressType;
 				return this;
 			}

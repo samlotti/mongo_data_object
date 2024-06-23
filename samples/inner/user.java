@@ -72,17 +72,17 @@ public class User {
 			return r;
 		}
 
-		public UserBuilder setUuid(String uuid) {
+		public UserBuilder withUuid(String uuid) {
 			this.uuid = uuid;
 			return this;
 		}
 
-		public UserBuilder setName(String name) {
+		public UserBuilder withName(String name) {
 			this.name = name;
 			return this;
 		}
 
-		public UserBuilder setEmail(String email) {
+		public UserBuilder withEmail(String email) {
 			this.email = email;
 			return this;
 		}

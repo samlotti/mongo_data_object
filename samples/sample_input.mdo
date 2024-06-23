@@ -27,6 +27,7 @@ entity OrgPerson {
 
     data ~List<Address>~ addresses as a = ~new ArrayList<>()~;
 
+    show (orgId, name, email);
 }
 
 enum Status {

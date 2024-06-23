@@ -85,22 +85,22 @@ public class OrgPerson {
 			return r;
 		}
 
-		public OrgPersonBuilder setUuid(String uuid) {
+		public OrgPersonBuilder withUuid(String uuid) {
 			this.uuid = uuid;
 			return this;
 		}
 
-		public OrgPersonBuilder setOrgId(String orgId) {
+		public OrgPersonBuilder withOrgId(String orgId) {
 			this.orgId = orgId;
 			return this;
 		}
 
-		public OrgPersonBuilder setName(String name) {
+		public OrgPersonBuilder withName(String name) {
 			this.name = name;
 			return this;
 		}
 
-		public OrgPersonBuilder setEmail(String email) {
+		public OrgPersonBuilder withEmail(String email) {
 			this.email = email;
 			return this;
 		}
